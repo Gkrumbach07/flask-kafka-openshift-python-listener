@@ -1,4 +1,4 @@
-# flask-kafka-openshift-python-listener
+# flask-kafka-python-listener
 
 This application is designed to listen for JSON formatted messages broadcast
 on Apache Kafka. It also provides an HTTP server to access the last received
@@ -11,7 +11,7 @@ workflow.
 ## Quickstart on OpenShift
 
 ```
-oc new-app centos/python-36-centos7~https://github.com/bones-brigade/flask-kafka-openshift-python-listener.git \
+oc new-app centos/python-36-centos7~https://gitlab.com/bones-brigade/flask-kafka-python-listener.git \
   -e KAFKA_BROKERS=kafka:9092 \
   -e KAFKA_TOPIC=bones-brigade \
   --name=listener
