@@ -55,9 +55,8 @@ def consumer(args):
         if exit_event.is_set():
             break
         try:
-            #for pred in json.loads(msg.value.decode('utf8'))['solar']:
-              #  print(pred)
-            observe_prediction(msg.value.decode('utf8'))
+            for pred in json.loads(msg.value.decode('utf8'))['solar']:
+                observe_prediction(pred)
         except Exception as e:
             logging.error(e.message)
     logging.info('exiting kafka consumer')
