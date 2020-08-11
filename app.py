@@ -19,7 +19,7 @@ exit_event = threading.Event()
 
 
 def index():
-    pass
+    return "Root"
 
 
 def server(args):
