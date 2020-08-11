@@ -48,7 +48,7 @@ def consumer(args):
             break
         try:
             for pred in json.loads(msg.value.decode('utf8'))['solar']:
-                h.label(msg.value.decode('utf8')['id']).observe(pred)
+                h.labels(msg.value.decode('utf8')['id']).observe(pred)
         except Exception as e:
             logging.error(e.message)
     logging.info('exiting kafka consumer')
