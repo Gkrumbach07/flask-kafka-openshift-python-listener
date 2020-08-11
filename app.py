@@ -47,8 +47,8 @@ def consumer(args):
         if exit_event.is_set():
             break
         try:
-            logging.info(str(msg))
-            h.observe(4.5)
+            for pred in msg['solar']:
+                h.observe(pred)
         except Exception as e:
             logging.error(e.message)
     logging.info('exiting kafka consumer')
