@@ -13,6 +13,11 @@ from prometheus_client import Histogram, make_wsgi_app
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 
+def regressor_prediction_recorder(p):
+    def record(v):
+        p.observe(v)
+    return record
+
 h = Histogram('predictions', 'Description of histogram')
 app.observe_prediction = regressor_prediction_recorder(h)
 
@@ -41,11 +46,6 @@ def server(args):
     app.run(host='0.0.0.0', port=8080)
     logging.info('exiting flask server')
 
-
-def regressor_prediction_recorder(p):
-    def record(v):
-        p.observe(v)
-    return record
 
 def consumer(args):
     logging.info('starting kafka consumer')
