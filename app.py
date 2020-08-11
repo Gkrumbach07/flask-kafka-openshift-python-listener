@@ -13,7 +13,7 @@ from prometheus_client import Histogram, make_wsgi_app
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 
-h = Histogram('request_latency_seconds', 'Description of histogram')
+h = Histogram('predictions', 'Description of histogram')
 access_lock = threading.Lock()
 exit_event = threading.Event()
 
@@ -47,6 +47,7 @@ def consumer(args):
         if exit_event.is_set():
             break
         try:
+            print(msg)
             for pred in msg['solar']:
                 print(pred)
                 h.observe(pred)
