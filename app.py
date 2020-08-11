@@ -13,20 +13,18 @@ from prometheus_client import Histogram, make_wsgi_app
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 
-def regressor_prediction_recorder(p):
-    def record(v):
-        p.observe(v)
-    return record
-
-h = Histogram('predictions', 'Description of histogram')
-app.observe_prediction = regressor_prediction_recorder(h)
-
 access_lock = threading.Lock()
 exit_event = threading.Event()
 
 
 def index():
     return "Root"
+
+
+def regressor_prediction_recorder(p):
+    def record(v):
+        p.observe(v)
+    return record
 
 
 def server(args):
@@ -42,6 +40,9 @@ def server(args):
     app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
         '/metrics': make_wsgi_app()
     })
+
+    h = Histogram('predictions', 'Description of histogram')
+    app.observe_prediction = regressor_prediction_recorder(h)
 
     app.run(host='0.0.0.0', port=8080)
     logging.info('exiting flask server')
