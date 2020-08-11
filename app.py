@@ -47,7 +47,7 @@ def consumer(args):
         if exit_event.is_set():
             break
         try:
-            for pred in msg[6]['solar']:
+            for pred in msg[6].decode('utf8')['solar']:
                 print(pred)
                 h.observe(pred)
         except Exception as e:
