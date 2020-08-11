@@ -13,15 +13,7 @@ from prometheus_client import Histogram, make_wsgi_app
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 
-def regressor_prediction_recorder(p):
-    def record(v):
-        p.observe(v)
-    return record
-
-
 h = Histogram('predictions', 'Description of histogram')
-observe_prediction = regressor_prediction_recorder(h)
-
 access_lock = threading.Lock()
 exit_event = threading.Event()
 
@@ -56,7 +48,7 @@ def consumer(args):
             break
         try:
             for pred in json.loads(msg.value.decode('utf8'))['solar']:
-                observe_prediction(pred)
+                h.label(msg.value.decode('utf8')['id']).observe(pred)
         except Exception as e:
             logging.error(e.message)
     logging.info('exiting kafka consumer')
