@@ -9,11 +9,13 @@ from flask import views
 from flask import json
 import kafka
 
-from prometheus_client import Histogram, make_wsgi_app
+from prometheus_client import Histogram, Summary make_wsgi_app
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 
 h = Histogram('predictions', 'Description of histogram')
+app.observe_prediction = regressor_prediction_recorder(h)
+
 access_lock = threading.Lock()
 exit_event = threading.Event()
 
@@ -40,6 +42,11 @@ def server(args):
     logging.info('exiting flask server')
 
 
+def regressor_prediction_recorder(p):
+    def record(v):
+        p.observe(v)
+    return record
+
 def consumer(args):
     logging.info('starting kafka consumer')
     consumer = kafka.KafkaConsumer(args.topic, bootstrap_servers=args.brokers)
@@ -47,9 +54,9 @@ def consumer(args):
         if exit_event.is_set():
             break
         try:
-            for pred in json.loads(msg.value.decode('utf8'))['solar']:
-                print(pred)
-                h.observe(pred)
+            #for pred in json.loads(msg.value.decode('utf8'))['solar']:
+              #  print(pred)
+            app.observe_prediction(msg.value.decode('utf8'))
         except Exception as e:
             logging.error(e.message)
     logging.info('exiting kafka consumer')
