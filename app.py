@@ -9,25 +9,17 @@ from flask import views
 from flask import json
 import kafka
 
+from prometheus_client import Histogram, make_wsgi_app
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
+
+h = Histogram('request_latency_seconds', 'Description of histogram')
 access_lock = threading.Lock()
 exit_event = threading.Event()
-_last_data = {}
 
 
-def last_data(update=None):
-    access_lock.acquire()
-    if update is not None:
-        global _last_data
-        _last_data = copy.deepcopy(update)
-    retval = copy.deepcopy(_last_data)
-    access_lock.release()
-    return retval
-
-
-class RootView(views.MethodView):
-    def get(self):
-        return json.jsonify(last_data())
+def index():
+    pass
 
 
 def server(args):
@@ -37,7 +29,12 @@ def server(args):
     # change this value for production environments
     app.config['SECRET_KEY'] = 'secret!'
 
-    app.add_url_rule('/', view_func=RootView.as_view('index'))
+    app.add_url_rule('/', 'index', index)
+
+    # Add prometheus wsgi middleware to route /metrics requests
+    app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
+        '/metrics': make_wsgi_app()
+    })
 
     app.run(host='0.0.0.0', port=8080)
     logging.info('exiting flask server')
@@ -50,7 +47,7 @@ def consumer(args):
         if exit_event.is_set():
             break
         try:
-            last_data(json.loads(str(msg.value, 'utf-8')))
+            h.observe(4.5)
         except Exception as e:
             logging.error(e.message)
     logging.info('exiting kafka consumer')
