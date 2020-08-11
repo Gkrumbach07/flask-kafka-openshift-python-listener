@@ -47,6 +47,7 @@ def consumer(args):
         if exit_event.is_set():
             break
         try:
+            logging.info(str(msg))
             h.observe(4.5)
         except Exception as e:
             logging.error(e.message)
