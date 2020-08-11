@@ -42,7 +42,7 @@ def server(args):
     })
 
     h = Histogram('predictions', 'Description of histogram')
-    app.observe_prediction = regressor_prediction_recorder(h)
+    observe_prediction = regressor_prediction_recorder(h)
 
     app.run(host='0.0.0.0', port=8080)
     logging.info('exiting flask server')
@@ -57,7 +57,7 @@ def consumer(args):
         try:
             #for pred in json.loads(msg.value.decode('utf8'))['solar']:
               #  print(pred)
-            app.observe_prediction(msg.value.decode('utf8'))
+            observe_prediction(msg.value.decode('utf8'))
         except Exception as e:
             logging.error(e.message)
     logging.info('exiting kafka consumer')
