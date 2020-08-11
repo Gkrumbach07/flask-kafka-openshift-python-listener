@@ -9,7 +9,7 @@ from flask import views
 from flask import json
 import kafka
 
-from prometheus_client import Histogram, Summary make_wsgi_app
+from prometheus_client import Histogram, make_wsgi_app
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 
