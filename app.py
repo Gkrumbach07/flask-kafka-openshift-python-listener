@@ -48,6 +48,7 @@ def consumer(args):
             break
         try:
             for pred in msg['solar']:
+                print(pred)
                 h.observe(pred)
         except Exception as e:
             logging.error(e.message)
