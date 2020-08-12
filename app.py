@@ -13,7 +13,7 @@ from prometheus_client import Histogram, make_wsgi_app
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 
-h = Histogram('predictions', 'Description of histogram', ["id"])
+h = Histogram('predictions', 'Description of histogram', ["id"], buckets=(0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, _INF))
 access_lock = threading.Lock()
 exit_event = threading.Event()
 
