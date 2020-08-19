@@ -44,6 +44,7 @@ def consumer(args):
     logging.info('starting kafka consumer')
     consumer = kafka.KafkaConsumer(args.topic, bootstrap_servers=args.brokers)
     for msg in consumer:
+        print(msg)
         if exit_event.is_set():
             break
         try:
