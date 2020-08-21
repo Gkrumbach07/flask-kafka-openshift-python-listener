@@ -50,7 +50,7 @@ def consumer(args):
             break
         try:
             for i, pred in enumerate(json.loads(msg.value.decode('utf8'))['solar']):
-                pred_day = datetime.strptime(json.loads(msg.value.decode('utf8'))['start_day'], '%y-%m-%d')
+                pred_day = datetime.strptime(json.loads(msg.value.decode('utf8'))['start_day'], '%Y-%m-%d')
                 pred_day = pred_day + timedelta(days=1)
                 h.labels(id=json.loads(msg.value.decode('utf8'))['id'], day=str(pred_day)).observe(pred)
         except Exception as e:
