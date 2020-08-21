@@ -3,6 +3,7 @@ import copy
 import logging
 import os
 import threading
+from datetime import datetime, timedelta
 
 import flask
 from flask import views
@@ -13,7 +14,7 @@ from prometheus_client import Histogram, make_wsgi_app
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 
-h = Histogram('predictions', 'Description of histogram', ["id"], buckets=(0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, float("inf")))
+h = Histogram('predictions', 'Description of histogram', ["id", "day"], buckets=(0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, float("inf")))
 access_lock = threading.Lock()
 exit_event = threading.Event()
 
@@ -48,8 +49,10 @@ def consumer(args):
         if exit_event.is_set():
             break
         try:
-            for pred in json.loads(msg.value.decode('utf8'))['solar']:
-                h.labels(json.loads(msg.value.decode('utf8'))['id']).observe(pred)
+            for i, pred in enumerate(json.loads(msg.value.decode('utf8'))['solar']):
+                pred_day = datetime.strptime(json.loads(msg.value.decode('utf8'))['start_day'], '%y/%m/%d')
+                pred_day = pred_day + timedelta(days=1)
+                h.labels(id=json.loads(msg.value.decode('utf8'))['id'], day=str(pred_day)).observe(pred)
         except Exception as e:
             logging.error(e.message)
     logging.info('exiting kafka consumer')
